@@ -1,74 +1,61 @@
-
+/* memory.c */
+#include "memory.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+static MemoryWord memory[MEMORY_SIZE];
 
-#include "memory.h"
-
-//char* memory[MEMORY_SIZE];
-
-void initMemory() {
+void initMemory(void) {
     for (int i = 0; i < MEMORY_SIZE; i++) {
-        memory[i] = NULL;
+        memory[i].name  = NULL;
+        memory[i].value = NULL;
     }
 }
 
 int allocateMemory(int size) {
-    int count = 0;
-    int start = -1;
-
+    int count = 0, start = -1;
     for (int i = 0; i < MEMORY_SIZE; i++) {
-        if (memory[i] == NULL) {
+        if (memory[i].name == NULL) {
             if (count == 0) start = i;
-            count++;
-            if (count == size) {
-                return start;
-            }
+            if (++count == size) return start;
         } else {
             count = 0;
-            start = -1;
         }
     }
-    return -1; // Not enough contiguous memory
+    return -1;
 }
 
+// by3ml kol haga fel memory null incase 3ayz ye restart
 void freeMemory(int start, int size) {
     for (int i = start; i < start + size && i < MEMORY_SIZE; i++) {
-        if (memory[i] != NULL) {
-            free(memory[i]);
-            memory[i] = NULL;
-        }
+        free(memory[i].name);
+        free(memory[i].value);
+        memory[i].name  = NULL;
+        memory[i].value = NULL;
     }
 }
 
-void writeToMemory(int index, const char* data) { // edit code
-    if (index >= 0 && index < MEMORY_SIZE) {
-        if (memory[index] != NULL) {
-            free(memory[index]);
-        }
-        memory[index] = (char*)malloc(strlen(data) + 1);
-        if (memory[index] != NULL) {
-            strcpy(memory[index], data);
-        }
-    }
+void writeMemory(int index, const char *name, const char *value) {
+    if (index < 0 || index >= MEMORY_SIZE) return;
+    free(memory[index].name);
+    free(memory[index].value);
+    memory[index].name  = strdup(name);
+    memory[index].value = strdup(value);
 }
 
-char* readFromMemory(int index) {
-    if (index >= 0 && index < MEMORY_SIZE && memory[index] != NULL) {
-        return memory[index];
-    }
-    return NULL;
+char *readMemoryValue(int index) {
+    if (index < 0 || index >= MEMORY_SIZE) return NULL;
+    return memory[index].value;
 }
 
-void printMemory() {
+void printMemory(void) {
     printf("\n===== Memory State =====\n");
     for (int i = 0; i < MEMORY_SIZE; i++) {
-        if (memory[i] != NULL) {
-            printf("[%02d]: %s\n", i, memory[i]);
-        } else {
+        if (memory[i].name)
+            printf("[%02d]: %s -> %s\n", i, memory[i].name, memory[i].value);
+        else
             printf("[%02d]: (empty)\n", i);
-        }
     }
     printf("=========================\n\n");
 }

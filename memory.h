@@ -15,4 +15,4 @@ void writeMemory(int index, const char *name, const char *value);
 char *readMemoryValue(int index);
 void printMemory(void);
 
-#endif /* MEMORY_H */
+#endif 

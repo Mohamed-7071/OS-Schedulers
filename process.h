@@ -1,17 +1,19 @@
-#ifndef PCB_H
-#define PCB_H
+#ifndef PROCESS_H
+#define PROCESS_H
 
-typedef struct {
-    int processID;
-    char state[20];
-    int priority;
-    int programCounter;
-    int memoryLowerBound;
-    int memoryUpperBound;
-} PCB;
+/* Kick off a new process: filename → memory, at given arrivalTime */
+void createProcess(const char *filename, int arrivalTime);
 
-PCB createPCB(int id, int lowerBound, int upperBound, int priority);
-void updateProcessState(PCB* pcb, const char* newState);
-void printPCB(const PCB* pcb);
+/* Load program lines into memory; returns how many lines written */
+int loadProgram(const char *filename, int memoryStartIndex);
 
-#endif // PCB_H
+/* Write the 5 PCB fields directly into memory */
+void initializePCB(int pid,
+                   int memLower, int memUpper,
+                   int priority,
+                   int pcbStartIndex);
+
+/* (Stub for future) parse one instruction */
+void parseInstruction(char *instructionLine, int processId);
+
+#endif /* PROCESS_H */
